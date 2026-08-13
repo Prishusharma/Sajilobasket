@@ -15,8 +15,19 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "category", "price", "discount_price", "stock", "is_active")
-    list_filter = ("category", "is_active")
+    list_display = ("name", "vendor", "category", "price", "stock", "is_daily_listing", "is_active")
+    list_filter = ("category", "is_daily_listing", "is_active")
     search_fields = ("name", "description")
     prepopulated_fields = {"slug": ("name",)}
     inlines = [ProductImageInline]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(vendor=request.user)
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.vendor = request.user
+        super().save_model(request, obj, form, change)
