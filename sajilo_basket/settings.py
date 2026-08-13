@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'basket',
     'products',
     'rest_framework',
-    'products',
+  
     'user',
     'orders',
 ]
